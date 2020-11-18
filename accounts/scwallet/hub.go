@@ -49,7 +49,7 @@ import (
 )
 
 // Scheme is the URI prefix for smartcard wallets.
-const Scheme = "pcsc"
+const Scheme = "keycard"
 
 // refreshCycle is the maximum time between wallet refreshes (if USB hotplug
 // notifications don't work).
@@ -152,8 +152,8 @@ func (hub *Hub) setPairing(wallet *Wallet, pairing *smartcardPairing) error {
 }
 
 // NewHub creates a new hardware wallet manager for smartcards.
-func NewHub(scheme string, datadir string) (*Hub, error) {
-	context, err := pcsc.EstablishContext(pcsc.ScopeSystem)
+func NewHub(daemonPath string, scheme string, datadir string) (*Hub, error) {
+	context, err := pcsc.EstablishContext(daemonPath, pcsc.ScopeSystem)
 	if err != nil {
 		return nil, err
 	}
@@ -220,7 +220,7 @@ func (hub *Hub) refreshWallets() {
 		// Mark the reader as present
 		seen[reader] = struct{}{}
 
-		// If we alreay know about this card, skip to the next reader, otherwise clean up
+		// If we already know about this card, skip to the next reader, otherwise clean up
 		if wallet, ok := hub.wallets[reader]; ok {
 			if err := wallet.ping(); err == nil {
 				continue

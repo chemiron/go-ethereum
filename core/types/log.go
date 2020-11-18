@@ -44,11 +44,11 @@ type Log struct {
 	// hash of the transaction
 	TxHash common.Hash `json:"transactionHash" gencodec:"required"`
 	// index of the transaction in the block
-	TxIndex uint `json:"transactionIndex" gencodec:"required"`
+	TxIndex uint `json:"transactionIndex"`
 	// hash of the block in which the transaction was included
 	BlockHash common.Hash `json:"blockHash"`
 	// index of the log in the block
-	Index uint `json:"logIndex" gencodec:"required"`
+	Index uint `json:"logIndex"`
 
 	// The Removed field is true if this log was reverted due to a chain reorganisation.
 	// You must pay attention to this field if you receive logs through a filter query.
@@ -71,8 +71,8 @@ type rlpLog struct {
 // rlpStorageLog is the storage encoding of a log.
 type rlpStorageLog rlpLog
 
-// LegacyRlpStorageLog is the previous storage encoding of a log including some redundant fields.
-type LegacyRlpStorageLog struct {
+// legacyRlpStorageLog is the previous storage encoding of a log including some redundant fields.
+type legacyRlpStorageLog struct {
 	Address     common.Address
 	Topics      []common.Hash
 	Data        []byte
@@ -129,7 +129,7 @@ func (l *LogForStorage) DecodeRLP(s *rlp.Stream) error {
 		}
 	} else {
 		// Try to decode log with previous definition.
-		var dec LegacyRlpStorageLog
+		var dec legacyRlpStorageLog
 		err = rlp.DecodeBytes(blob, &dec)
 		if err == nil {
 			*l = LogForStorage{
